@@ -2,11 +2,12 @@ import { Groq } from 'groq-sdk';
 import { NextResponse } from 'next/server';
 import { AUSTRIA_AI_CONFIG } from '@/data/ai-config';
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-});
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
+    const groq = new Groq({
+        apiKey: process.env.GROQ_API_KEY,
+    });
     try {
         const { messages, lang } = await req.json();
 
