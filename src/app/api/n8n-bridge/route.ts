@@ -5,7 +5,7 @@ export async function POST(req: Request) {
         const body = await req.json();
 
         // Webhook de n8n para Austria (A configurar en el panel de n8n)
-        const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL_AUSTRIA || 'https://manager.generarise.space/webhook/austria-leads';
+        const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL_AUSTRIA || 'https://manager.agentes.space/webhook/austria-leads';
 
         console.log('📤 Forwarding Austria data to n8n:', body);
 

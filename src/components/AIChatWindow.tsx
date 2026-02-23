@@ -32,6 +32,16 @@ export default function AIChatWindow({ isOpen, onClose, lang }: { isOpen: boolea
         setMessages([{ role: 'assistant', content: defaultMessage }]);
     }, [lang, defaultMessage]);
 
+    const speak = (text: string) => {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        // Map current lang to BCP 47
+        const langMap: Record<string, string> = { de: 'de-DE', en: 'en-US', es: 'es-ES', it: 'it-IT' };
+        utterance.lang = langMap[lang] || 'de-DE';
+        window.speechSynthesis.speak(utterance);
+    };
+
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
 
@@ -49,7 +59,9 @@ export default function AIChatWindow({ isOpen, onClose, lang }: { isOpen: boolea
 
             const data = await response.json();
             if (data.message) {
-                setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+                const assistantMsg = { role: 'assistant' as const, content: data.message };
+                setMessages(prev => [...prev, assistantMsg]);
+                speak(data.message);
             } else {
                 setMessages(prev => [...prev, { role: 'assistant', content: 'Lo siento, hubo un error al procesar tu mensaje.' }]);
             }
@@ -89,11 +101,22 @@ export default function AIChatWindow({ isOpen, onClose, lang }: { isOpen: boolea
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[400px] min-h-[300px]">
                         {messages.map((m, i) => (
                             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${m.role === 'user'
+                                <div className={`relative max-w-[80%] p-3 rounded-2xl text-sm ${m.role === 'user'
                                     ? 'bg-purple-600 text-white rounded-tr-none'
-                                    : 'bg-gray-100 text-gray-800 rounded-tl-none'
+                                    : 'bg-gray-100 text-gray-800 rounded-tl-none pr-8'
                                     }`}>
                                     {m.content}
+                                    {m.role === 'assistant' && (
+                                        <button
+                                            onClick={() => speak(m.content)}
+                                            className="absolute top-2 right-2 text-gray-400 hover:text-purple-500 transition-colors"
+                                            title="Listen"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+                                            </svg>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
