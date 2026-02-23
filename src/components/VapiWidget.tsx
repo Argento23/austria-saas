@@ -12,7 +12,7 @@ export default function VapiWidget() {
                 if (window.vapiSDK) {
                     // @ts-ignore
                     window.vapiSDK.run({
-                        apiKey: "996ce0cb-fff4-47a2-a3e9-01e20a4f4789",
+                        apiKey: "3fe2e389-3dc5-4071-bfb5-c91a511af385",
                         assistant: "c500ab0f-ea72-47fd-b66f-e2caf54a0ebf", // Stefan New New
                         config: {
                             position: "bottom-right",
